@@ -22,6 +22,7 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
             placeholder="name@company.com"
             required
+            v-model="email"
           />
         </div>
         <div>
@@ -36,9 +37,10 @@
             id="password"
             placeholder="••••••••"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-            required
+            v-model="password"
           />
         </div>
+        <p v-if="errorMessage">{{ errorMessage }}</p>
         <div class="flex items-start">
           <div class="flex items-start">
             <div class="flex items-center h-5">
@@ -47,7 +49,6 @@
                 type="checkbox"
                 value=""
                 class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
-                required
               />
             </div>
             <label
@@ -65,6 +66,7 @@
         <button
           type="submit"
           class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          @click="login"
         >
           Login to your account
         </button>
@@ -79,10 +81,47 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Login",
+<script setup>
+import { ref } from "vue";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "vue-router"
+
+const email = ref("");
+const password = ref("");
+const errorMessage = ref()
+const router = useRouter()
+
+const login = () => {
+  console.log("went register");
+  const auth = getAuth()
+  signInWithEmailAndPassword(auth, email.value, password.value).then(
+    (data) => {
+      console.log("Successfully signed in!");
+
+      console.log(auth.currentUser)
+      // router.push("/")
+    },
+  ).catch((error) => {
+    console.log(error.code);
+    console.log("went catch");
+    switch(error.code) {
+      case "auth/invalid-email":
+        errorMessage.value = "Invalid Email"
+        break
+      case "auth/user-not-founđ":
+        errorMessage.value = "No account with that email was found"
+        break
+      case "auth/wrong-password":
+        errorMessage.value = "Incorrect password"
+        break
+      default: 
+        errorMessage.value = "Email or password was incorrect"
+        break
+    }
+  })
 };
+
+const signInWithGoogle = () => {};
 </script>
 
 <style scoped></style>
