@@ -30,12 +30,32 @@
     >
       Get country information
     </button>
+
+    <template v-if="countries" v-for="country in countries" :key="country">
+      <div>Country: {{ country.name }}</div>
+      <div>Capital: {{ country.capital }}</div>
+    </template>
+
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="getCountries"
+    >
+      Get countries
+    </button>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import { db } from "../main";
-import { collection, addDoc, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+} from "firebase/firestore";
 
 const createUser = async () => {
   const collRef = collection(db, "users");
@@ -85,5 +105,14 @@ const getCountry = async () => {
   } else {
     alert("Document does not exist");
   }
+};
+
+const countries = ref([]);
+const getCountries = async () => {
+  const querySnapshot = await getDocs(query(collection(db, "countries")));
+
+  querySnapshot.forEach((doc) => {
+    countries.value.push(doc.data());
+  });
 };
 </script>
