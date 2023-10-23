@@ -23,7 +23,8 @@
       Add capital column to country
     </button>
 
-    <div>Capital: {{ capital }}</div>
+    <div>Name: {{ country.name }}</div>
+    <div>Capital: {{ country.capital }}</div>
     <button
       class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       @click="getCountry"
@@ -123,8 +124,8 @@ const updateOrCreateCountry = async () => {
 };
 
 const addColumnOrUpdateValueToColumn = async () => {
-  const dataObject = { capital: "Ha Noi" };
-  const documentId = "VN";
+  const dataObject = { capital: "New York" };
+  const documentId = "US";
   try {
     await setDoc(doc(db, "countries", documentId), dataObject, { merge: true });
     alert(
@@ -135,15 +136,15 @@ const addColumnOrUpdateValueToColumn = async () => {
   }
 };
 
-const capital = ref("");
+const country = ref("");
 const getCountry = async () => {
   // attempt to retrieve the country
-  const documentSnapshot = await getDoc(doc(db, "countries", "VN"));
+  const documentSnapshot = await getDoc(doc(db, "countries", "US"));
 
   // if it exists, alert it
   if (documentSnapshot.exists()) {
     alert(JSON.stringify(documentSnapshot.data()));
-    capital.value = documentSnapshot.data().capital;
+    country.value = documentSnapshot.data();
   } else {
     alert("Document does not exist");
   }
