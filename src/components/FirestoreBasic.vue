@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-6 items-center h-screen w-full p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
+    class="flex flex-col gap-6 items-center w-full p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
   >
     <button
       class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -79,10 +79,25 @@
     >
       Delete Field
     </button>
+
+    <p class="font-bold">Realtime Country</p>
+    <div>Name: {{ realtimeCountry.name }} (aka. {{ realtimeCountry.aka }})</div>
+    <div>Capital: {{ realtimeCountry.capital }}</div>
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="addAlsoKnownAs"
+    >
+      Add AKA
+    </button>
+
+    <div class="font-bold">Users realtime</div>
+    <template v-if="realTimeUsers" v-for="(user, index) in realTimeUsers" :key="user">
+      <div>{{ user.firstName }} {{ user.lastName }}</div>
+    </template>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { db } from "../main";
 import {
   where,
@@ -98,6 +113,7 @@ import {
   updateDoc,
   deleteDoc,
   deleteField,
+  onSnapshot,
 } from "firebase/firestore";
 
 const createUser = async () => {
@@ -199,4 +215,48 @@ const deleteFieldCapital = async () => {
     alert(`Delete Field failed: ${error}`);
   }
 };
+
+const realtimeCountry = ref({});
+onMounted(async () => {
+  await getRealtimeCountry();
+  await getUsersRealtime()
+});
+// await getRealtimeCountry()
+
+const getRealtimeCountry = async () => {
+  onSnapshot(doc(db, "countries", "US"), (snap) => {
+    const snapShot = snap.data();
+    realtimeCountry.value.name = snapShot.name;
+    realtimeCountry.value.capital = snapShot.capital;
+    realtimeCountry.value.aka = snapShot.aka;
+  });
+};
+
+const addAlsoKnownAs = async () => {
+  try {
+    await setDoc(
+      doc(db, "countries", "US"),
+      {
+        capital: "New York",
+      },
+      { merge: true },
+    );
+    alert("Add capital successfully");
+  } catch (error) {
+    alert("Add capital failed");
+  }
+};
+
+const realTimeUsers = ref([])
+const getUsersRealtime = async () => {
+  try {
+    onSnapshot(collection(db, "users"), (snap) => {
+      snap.forEach((doc) => {
+        realTimeUsers.value.push(doc.data())
+      })
+    })
+  } catch (error) {
+    alert("Get users realtime failed")    
+  }
+}
 </script>
