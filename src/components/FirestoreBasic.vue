@@ -44,7 +44,7 @@
     </button>
 
     <div class="font-bold">Users by condition</div>
-    <template v-if="users" v-for="(user, index) in users" :key="country">
+    <template v-if="users" v-for="(user, index) in users" :key="user">
       <div>User {{ index }}: {{ user.firstName }} {{ user.lastName }}</div>
     </template>
     <button
@@ -52,6 +52,17 @@
       @click="getUsersByCondition"
     >
       Get users by condition
+    </button>
+
+    <div class="font-bold">Users with order</div>
+    <template v-if="usersOrder" v-for="(user, index) in usersOrder" :key="user">
+      <div>{{ user.firstName }} {{ user.lastName }}</div>
+    </template>
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="getUsersOrder"
+    >
+      Get users with order
     </button>
   </div>
 </template>
@@ -67,6 +78,7 @@ import {
   getDoc,
   getDocs,
   query,
+orderBy,
 } from "firebase/firestore";
 
 const createUser = async () => {
@@ -133,6 +145,14 @@ const getUsersByCondition = async () => {
   const querySnapshot = await getDocs(query(collection(db, "users"), where("dob", ">", "1990")))
   querySnapshot.forEach((doc) => {
     users.value.push(doc.data())
+  })
+}
+
+const usersOrder = ref([])
+const getUsersOrder = async () => {
+  const querySnapshot = await getDocs(query(collection(db, "users"), orderBy("firstName")))
+  querySnapshot.forEach((doc) => {
+    usersOrder.value.push(doc.data())
   })
 }
 
