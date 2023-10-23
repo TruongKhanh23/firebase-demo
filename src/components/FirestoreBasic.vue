@@ -71,6 +71,13 @@
     >
       Delete country
     </button>
+
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="deleteFieldCapital"
+    >
+      Delete Field
+    </button>
   </div>
 </template>
 <script setup>
@@ -87,7 +94,9 @@ import {
   query,
   orderBy,
   limit,
+  updateDoc,
   deleteDoc,
+  deleteField,
 } from "firebase/firestore";
 
 const createUser = async () => {
@@ -176,6 +185,17 @@ const deleteCountry = async () => {
     alert(`Country ${countryId} was deleted`);
   } catch (error) {
     alert(`Delete country failed`);
+  }
+};
+
+const deleteFieldCapital = async () => {
+  try {
+    await updateDoc(doc(db, "countries", "US"), {
+      capital: deleteField(),
+    });
+    alert(`Field captial was deleted`);
+  } catch (error) {
+    alert(`Delete Field failed: ${error}`);
   }
 };
 </script>
