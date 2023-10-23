@@ -64,6 +64,13 @@
     >
       Get users with order
     </button>
+
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="deleteCountry"
+    >
+      Delete country
+    </button>
   </div>
 </template>
 <script setup>
@@ -80,6 +87,7 @@ import {
   query,
   orderBy,
   limit,
+  deleteDoc,
 } from "firebase/firestore";
 
 const createUser = async () => {
@@ -159,5 +167,15 @@ const getUsersOrder = async () => {
   querySnapshot.forEach((doc) => {
     usersOrder.value.push(doc.data());
   });
+};
+
+const deleteCountry = async () => {
+  const countryId = "VN";
+  try {
+    await deleteDoc(doc(db, "countries", countryId));
+    alert(`Country ${countryId} was deleted`);
+  } catch (error) {
+    alert(`Delete country failed`);
+  }
 };
 </script>
