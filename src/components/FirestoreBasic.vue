@@ -250,7 +250,7 @@ const addAlsoKnownAs = async () => {
 const realTimeUsers = ref([])
 const getUsersRealtime = async () => {
   try {
-    onSnapshot(collection(db, "users"), (snap) => {
+    onSnapshot(query(collection(db, "users"), where("dob", "<", "1990")), (snap) => {
       snap.forEach((doc) => {
         realTimeUsers.value.push(doc.data())
       })
