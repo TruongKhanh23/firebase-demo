@@ -79,6 +79,7 @@ import {
   getDocs,
   query,
   orderBy,
+  limit,
 } from "firebase/firestore";
 
 const createUser = async () => {
@@ -153,7 +154,7 @@ const getUsersByCondition = async () => {
 const usersOrder = ref([]);
 const getUsersOrder = async () => {
   const querySnapshot = await getDocs(
-    query(collection(db, "users"), orderBy("firstName")),
+    query(collection(db, "users"), orderBy("firstName"), limit(1)),
   );
   querySnapshot.forEach((doc) => {
     usersOrder.value.push(doc.data());
