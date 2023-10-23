@@ -42,12 +42,24 @@
     >
       Get countries
     </button>
+
+    <div class="font-bold">Users by condition</div>
+    <template v-if="users" v-for="(user, index) in users" :key="country">
+      <div>User {{ index }}: {{ user.firstName }} {{ user.lastName }}</div>
+    </template>
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="getUsersByCondition"
+    >
+      Get users by condition
+    </button>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import { db } from "../main";
 import {
+  where,
   collection,
   addDoc,
   doc,
@@ -115,4 +127,13 @@ const getCountries = async () => {
     countries.value.push(doc.data());
   });
 };
+
+const users = ref([])
+const getUsersByCondition = async () => {
+  const querySnapshot = await getDocs(query(collection(db, "users"), where("dob", ">", "1990")))
+  querySnapshot.forEach((doc) => {
+    users.value.push(doc.data())
+  })
+}
+
 </script>
