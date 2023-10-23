@@ -78,7 +78,7 @@ import {
   getDoc,
   getDocs,
   query,
-orderBy,
+  orderBy,
 } from "firebase/firestore";
 
 const createUser = async () => {
@@ -140,20 +140,23 @@ const getCountries = async () => {
   });
 };
 
-const users = ref([])
+const users = ref([]);
 const getUsersByCondition = async () => {
-  const querySnapshot = await getDocs(query(collection(db, "users"), where("dob", ">", "1990")))
+  const querySnapshot = await getDocs(
+    query(collection(db, "users"), where("dob", ">", "1990")),
+  );
   querySnapshot.forEach((doc) => {
-    users.value.push(doc.data())
-  })
-}
+    users.value.push(doc.data());
+  });
+};
 
-const usersOrder = ref([])
+const usersOrder = ref([]);
 const getUsersOrder = async () => {
-  const querySnapshot = await getDocs(query(collection(db, "users"), orderBy("firstName")))
+  const querySnapshot = await getDocs(
+    query(collection(db, "users"), orderBy("firstName")),
+  );
   querySnapshot.forEach((doc) => {
-    usersOrder.value.push(doc.data())
-  })
-}
-
+    usersOrder.value.push(doc.data());
+  });
+};
 </script>
