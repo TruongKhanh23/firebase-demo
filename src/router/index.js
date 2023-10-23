@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router"; // Import the neces
 import HomePage from "@/components/HomePage.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
+import FirestoreBasic from "@/components/FirestoreBasic.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const routes = [
@@ -13,6 +14,7 @@ const routes = [
       requiresAuth: true,
     },
   },
+  { path: "/firestore-basic", component: FirestoreBasic },
   { path: "/login", component: Login },
   { path: "/register", component: Register },
 ];
@@ -27,21 +29,21 @@ const getCurrentUser = () => {
     const removeListener = onAuthStateChanged(
       getAuth(),
       (user) => {
-        removeListener()
-        resolve(user)
+        removeListener();
+        resolve(user);
       },
-      reject
-    )
-  })
-}
+      reject,
+    );
+  });
+};
 
 router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if(await getCurrentUser()) {
-      next()
+    if (await getCurrentUser()) {
+      next();
     } else {
-      alert("You don't have access!")
-      next("/login")
+      alert("You don't have access!");
+      next("/login");
     }
   } else {
     next();
